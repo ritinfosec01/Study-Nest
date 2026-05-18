@@ -1,0 +1,5 @@
+{
+  "_comment": "List every image filename you drop into this folder. Each entry shows up as a background option in the Background page. 'label' is optional; if omitted, the filename (minus extension) is used.",
+  "images": [
+  ]
+}
