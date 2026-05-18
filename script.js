@@ -654,7 +654,9 @@ async function loadCustomBgs(){
   }catch(e){ return []; }
 }
 
-function allBgs(){ return [...customBgs, ...bgOptions]; }
+function allBgs(){
+  return customBgs.length ? customBgs : bgOptions;
+}
 
 function bgCssById(id){
   const all = [...customBgs, ...bgOptions, ...bgColors];
