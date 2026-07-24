@@ -1,0 +1,18 @@
+:root{
+  --sidebar-w:180px;
+  --bg:#0e0e0e;
+  --panel:rgba(20,20,20,0.82);
+  --panel-border:rgba(255,255,255,0.08);
+  --text:#f0ede8;
+  --muted:rgba(240,237,232,0.45);
+  --accent:#f5a623;
+  --accent-hover:color-mix(in srgb, var(--accent) 82%, white);
+  --accent-text:#111;
+  --accent-soft:color-mix(in srgb, var(--accent) 18%, transparent);
+  --accent-glow:color-mix(in srgb, var(--accent) 35%, transparent);
+  --accent2:#7c6af7;
+  --green:#4caf7d;
+  --red:#e05c5c;
+  --radius:14px;
+  --font:'Inter',sans-serif;
+}
