@@ -3,379 +3,346 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StudyNest</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>StudyNest - Sanctuary</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+<button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Menu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+</button>
+
 <div class="notif" id="notif"></div>
 
-<!-- Deadline modal -->
+<!-- ═══════════ MODALS ═══════════ -->
+
+<!-- Profile Modal -->
+<div class="modal-overlay" id="profileModal">
+  <div class="modal">
+    <div class="modal-title">Your Profile</div>
+
+    <label class="sub-text mb-2" style="display:block">Display Name</label>
+    <input class="modal-inp" id="profileNameInp" placeholder="e.g. Dango" maxlength="20">
+
+    <label class="sub-text mb-2 mt-2" style="display:block">Avatar</label>
+    <div class="avatar-picker" id="avatarPicker"></div>
+
+    <label class="sub-text mb-2 mt-2" style="display:block">Current Status</label>
+    <select class="modal-inp" id="profileStatusInp" style="cursor:pointer">
+      <option value="Deep Work Mode">Deep Work Mode</option>
+      <option value="Big Dango Family">Big Dango Family 🍡</option>
+      <option value="Taking a Break">Taking a Break</option>
+      <option value="Casual Reading">Casual Reading</option>
+      <option value="Sleeping">Sleeping 💤</option>
+    </select>
+
+    <div class="modal-btns mt-4">
+      <button class="modal-btn confirm" onclick="saveProfile()">Save Profile</button>
+    </div>
+
+    <div style="border-top: 1px solid var(--panel-border); margin-top: 20px; padding-top: 20px;">
+      <button class="btn-outline w-100" onclick="resetAppData()" style="color: var(--red); border-color: rgba(239,68,68,0.3)">⚠️ Reset All App Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- Task Modal -->
+<div class="modal-overlay" id="taskModal">
+  <div class="modal">
+    <div class="modal-title">Add Focus Objective</div>
+    <input class="modal-inp" id="taskNameInp" placeholder="e.g. Read Chapter 4" maxlength="40">
+    <input class="modal-inp" id="taskTagInp" placeholder="Tag (e.g. Reading · 30 min)" maxlength="30">
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeModal('taskModal')">Cancel</button>
+      <button class="modal-btn confirm" onclick="saveTask()">Save Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Habit Modal -->
+<div class="modal-overlay" id="habitModal">
+  <div class="modal">
+    <div class="modal-title">Add New Ritual</div>
+    <input class="modal-inp" id="habitNameInp" placeholder="e.g. Meditate" maxlength="30">
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeModal('habitModal')">Cancel</button>
+      <button class="modal-btn confirm" onclick="saveHabit()">Save Ritual</button>
+    </div>
+  </div>
+</div>
+
+<!-- Deadline Modal -->
 <div class="modal-overlay" id="dlModal">
   <div class="modal">
     <div class="modal-title">Add Deadline</div>
-    <input class="modal-inp" id="dlName" placeholder="Deadline name..." maxlength="50">
-    <input class="modal-inp" id="dlDate" type="date">
-    <select class="modal-inp" id="dlColor" style="cursor:pointer">
-      <option value="#f5a623">Orange</option>
-      <option value="#7c6af7">Purple</option>
-      <option value="#e05c5c">Red</option>
-      <option value="#4caf7d">Green</option>
-    </select>
+    <input class="modal-inp" id="dlNameInp" placeholder="Milestone Name" maxlength="40">
+    <input class="modal-inp" id="dlDateInp" type="date">
     <div class="modal-btns">
-      <button class="modal-btn cancel" onclick="closeDlModal()">Cancel</button>
+      <button class="modal-btn cancel" onclick="closeModal('dlModal')">Cancel</button>
       <button class="modal-btn confirm" onclick="saveDeadline()">Save</button>
     </div>
   </div>
 </div>
 
-<!-- Event modal (matches reference screenshot) -->
+<!-- Event Modal -->
 <div class="modal-overlay" id="evModal">
-  <div class="modal event-modal">
-    <div class="ev-head">
-      <div class="ev-head-title">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        <span>NEW EVENT</span>
-      </div>
-      <button class="ev-close" onclick="closeEvModal()" aria-label="Close">&times;</button>
-    </div>
-
-    <div class="ev-field">
-      <label class="ev-label">TITLE <span class="req">*</span></label>
-      <input class="ev-inp" id="evTitle" placeholder="Event title" maxlength="80">
-    </div>
-
-    <div class="ev-field">
-      <label class="ev-label">NOTE</label>
-      <textarea class="ev-inp ev-textarea" id="evNote" placeholder="Optional note..." rows="3"></textarea>
-    </div>
-
-    <div class="ev-field">
-      <label class="ev-label">DATE <span class="req">*</span></label>
-      <div class="ev-date-row">
-        <svg class="ev-date-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        <input class="ev-inp ev-date-inp" id="evDate" type="date">
-      </div>
-    </div>
-
-    <div class="ev-field">
-      <label class="ev-label"><svg style="width:12px;height:12px;vertical-align:-1px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> TIME</label>
-      <div class="ev-time-row">
-        <span class="ev-time-tag">START</span>
-        <input class="ev-time-inp" id="evStartH" type="number" min="1" max="12" value="9">
-        <span class="ev-time-sep">:</span>
-        <input class="ev-time-inp" id="evStartM" type="number" min="0" max="59" value="0">
-        <select class="ev-time-ampm" id="evStartAP">
-          <option>AM</option><option>PM</option>
-        </select>
-      </div>
-      <div class="ev-time-row">
-        <span class="ev-time-tag">END</span>
-        <input class="ev-time-inp" id="evEndH" type="number" min="1" max="12" value="10">
-        <span class="ev-time-sep">:</span>
-        <input class="ev-time-inp" id="evEndM" type="number" min="0" max="59" value="0">
-        <select class="ev-time-ampm" id="evEndAP">
-          <option>AM</option><option>PM</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="ev-row-split">
-      <div class="ev-field">
-        <label class="ev-label">COLOR</label>
-        <div class="ev-colors" id="evColors"></div>
-      </div>
-      <div class="ev-field">
-        <label class="ev-label">REPEAT</label>
-        <select class="ev-inp ev-repeat" id="evRepeat">
-          <option value="never">Never</option>
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="ev-footer">
-      <button class="ev-btn ev-btn-cancel" onclick="closeEvModal()">Cancel</button>
-      <button class="ev-btn ev-btn-create" onclick="saveEvent()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
-        <span id="evCreateLabel">Create</span>
-      </button>
+  <div class="modal">
+    <div class="modal-title">Add Calendar Event</div>
+    <input class="modal-inp" id="evTitleInp" placeholder="Event Name" maxlength="40">
+    <input class="modal-inp" id="evDateInp" type="date">
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeModal('evModal')">Cancel</button>
+      <button class="modal-btn confirm" onclick="saveEvent()">Save Event</button>
     </div>
   </div>
 </div>
 
-<!-- Now Playing -->
-<div class="now-playing-bar" id="nowPlayingBar">
-  <span class="np-thumb" id="npThumb">♪</span>
-  <div class="np-info">
-    <div class="np-name" id="npName">—</div>
-    <div class="np-type" id="npType">—</div>
-  </div>
-  <div class="np-btns">
-    <button class="np-btn playing" id="npPlayBtn" onclick="togglePlayback()">||</button>
-    <button class="np-btn" onclick="stopMusic()">■</button>
-  </div>
-  <div class="vol-row">
-    <span class="vol-lbl">Vol</span>
-    <input type="range" class="vol-sl" min="0" max="100" value="40" id="npVol" oninput="setVol(this.value)">
+<!-- Audio Modal -->
+<div class="modal-overlay" id="audioModal">
+  <div class="modal audio-modal">
+    <div class="modal-title">Sanctuary Audio</div>
+    <div class="audio-grid" id="audioGrid"></div>
+    <div class="audio-controls mt-4">
+      <button class="btn-primary w-100" id="audioPlayBtn" onclick="toggleAudioPlay()">Play Ambience</button>
+    </div>
+    <div class="modal-btns mt-2">
+      <button class="modal-btn cancel w-100" onclick="closeModal('audioModal')">Close</button>
+    </div>
   </div>
 </div>
 
+<!-- ═══════════ APP SHELL ═══════════ -->
 <div class="shell">
   <!-- SIDEBAR -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sb-logo">
       <div class="sb-logo-icon">SN</div>
       <span>StudyNest</span>
     </div>
+
     <nav class="sb-nav">
-      <button class="sb-item active" data-view="dashboard" onclick="showView('dashboard')">
+      <button class="sb-item active" data-view="dashboard">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         Dashboard
       </button>
-      <button class="sb-item" data-view="calendar" onclick="showView('calendar')">
+      <button class="sb-item" data-view="calendar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
         Calendar
       </button>
-      <button class="sb-item" data-view="habits" onclick="showView('habits')">
+      <button class="sb-item" data-view="habits">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
         Habits
       </button>
-      <div class="sb-section">Preferences</div>
-      <button class="sb-item" data-view="customize" onclick="showView('customize')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M20 12h2M2 12h2M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41"/></svg>
-        Customize
-      </button>
-      <button class="sb-item" data-view="music" onclick="showView('music')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-        Music
-      </button>
-      <button class="sb-item" data-view="background" onclick="showView('background')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-        Background
-      </button>
     </nav>
+
+    <div class="sb-audio">
+      <div class="sb-audio-toggle">
+        <span>Sanctuary Audio</span>
+        <button class="toggle sm" id="audioSidebarToggle" onclick="toggleSidebarAudio()"></button>
+      </div>
+      <div class="sb-audio-track" onclick="openModal('audioModal')" style="cursor: pointer;">
+        <span class="music-icon" id="sbAudioIcon">🎵</span>
+        <div class="track-info">
+          <div class="track-name" id="sidebarTrackName">Paused</div>
+          <div class="track-type" id="sidebarTrackType">Ambient</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UPDATED PROFILE SECTION (Dango) -->
+    <div class="sb-profile" onclick="openProfileModal()" style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">
+      <div class="sb-profile-avatar" id="userAvatar">🍡</div>
+      <div class="sb-profile-info">
+        <div class="sb-profile-name" id="userName">Dango</div>
+        <div class="sb-profile-status"><span class="status-dot"></span> <span id="userStatus">Deep Work Mode</span></div>
+      </div>
+    </div>
   </aside>
 
-  <!-- MAIN -->
-  <div class="main" id="mainArea">
+  <!-- MAIN AREA -->
+  <div class="main">
     <div class="bg-layer" id="bgLayer"></div>
     <div class="bg-overlay" id="bgOverlay"></div>
 
-    <!-- DASHBOARD -->
-    <div class="dash-wrap" id="dashView">
-      <div class="topbar">
-        <div style="width:140px"></div>
-        <div class="topbar-quote" id="quoteText"></div>
-        <div class="topbar-badge">
-          <div class="badge-dot"></div>
-          <span id="levelText">Novice</span>
-        </div>
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-quote">
+        <span class="quote-text">"Focus is a muscle, trained in silence to lift the weight of the world."</span>
+        <span class="quote-author">— ORGANIC SANCTUARY PRINCIPLE</span>
       </div>
+      <div class="topbar-pills">
+        <button class="pill" onclick="exportData()" style="cursor:pointer; border:1px solid var(--panel-border); background:transparent; font-family:inherit; color:inherit;">
+          <span class="dot green"></span> Export Backup
+        </button>
+        <div class="pill"><span class="dot yellow"></span> <span id="streakCount">0</span> Day Streak</div>
+      </div>
+    </div>
 
-      <div class="content-area">
-        <!-- LEFT -->
-        <div class="left-panel">
-          <div class="stats-card">
-            <div class="stats-week">
-              <button class="week-nav" onclick="changeWeek(-1)">&#8249;</button>
-              <span class="week-label" id="weekLabel"></span>
-              <button class="week-nav" onclick="changeWeek(1)">&#8250;</button>
-            </div>
-            <div class="stats-grid">
-              <div class="stat-item">
-                <div class="stat-num" id="wSessions">0</div>
-                <div class="stat-sub">Sessions</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-num"><span id="wHrs">0</span><span class="stat-unit">h</span> <span id="wMins">0</span><span class="stat-unit">m</span></div>
-                <div class="stat-sub">Time</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-num" id="wTasks">0</div>
-                <div class="stat-sub">Tasks</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Schedule (today's events) -->
-          <div class="schedule-card">
+    <!-- DASHBOARD VIEW -->
+    <div class="view active" id="dashboardView">
+      <div class="dash-grid">
+        <div class="col">
+          <div class="card">
             <div class="card-header">
-              <div class="card-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                Today's Schedule
+              <span class="card-title">Weekly Impact</span>
+              <span class="badge green">Active</span>
+            </div>
+            <div class="stats-row">
+              <div class="stat">
+                <div class="val" id="statSessions">0</div>
+                <div class="lbl">Sessions</div>
               </div>
-              <button class="card-link" onclick="openEvModal()">+ Event</button>
+              <div class="stat">
+                <div class="val"><span id="statHrs">0</span><span>h</span> <span id="statMins">0</span><span>m</span></div>
+                <div class="lbl">Focus Time</div>
+              </div>
+              <div class="stat">
+                <div class="val"><span id="statTaskPct">0</span><span>%</span></div>
+                <div class="lbl">Tasks</div>
+              </div>
             </div>
-            <div class="schedule-list" id="scheduleList"></div>
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Daily Progress</span> <span id="statPctText">0%</span></div>
+              <div class="progress-bar"><div class="fill" id="statProgressBar" style="width: 0%"></div></div>
+            </div>
           </div>
 
-          <div class="habit-mini-card" id="habitMiniCard"></div>
+          <div class="card flex-1">
+            <div class="card-header">
+              <span class="card-title">Daily Rituals</span>
+              <button class="btn-icon-sm" onclick="openModal('habitModal')">+</button>
+            </div>
+            <div class="habit-mini-list" id="habitMiniList"></div>
+          </div>
         </div>
 
-        <!-- CENTER -->
-        <div class="center-panel">
-          <div class="timer-mode-tabs">
-            <button class="tmtab active" data-mode="pomodoro" onclick="setMode('pomodoro',this)">Pomodoro</button>
-            <button class="tmtab" data-mode="short" onclick="setMode('short',this)">Short Break</button>
-            <button class="tmtab" data-mode="long" onclick="setMode('long',this)">Long Break</button>
+        <div class="col center-col">
+          <div class="timer-tabs">
+            <button class="tab active" data-mode="pomodoro" onclick="setTimerMode(25)">Pomodoro</button>
+            <button class="tab" data-mode="short" onclick="setTimerMode(5)">Short Break (5m)</button>
+            <button class="tab" data-mode="long" onclick="setTimerMode(15)">Long Break (15m)</button>
           </div>
-          <div class="timer-display">
-            <div class="timer-digits" id="timerDigits">25:00</div>
+
+          <div class="timer-ring-wrap">
+            <svg class="timer-svg" viewBox="0 0 100 100">
+              <circle class="ring-bg" cx="50" cy="50" r="46"></circle>
+              <circle class="ring-progress" id="timerProgress" cx="50" cy="50" r="46"></circle>
+            </svg>
+            <div class="timer-content">
+              <div class="timer-badge" id="timerFocusTask">🍅 Focus Session</div>
+              <div class="timer-digits" id="timerDigits">25:00</div>
+              <div class="timer-sub">Cycle <span id="timerCycle">1</span> of 4 · Pomodoro Sanctuary</div>
+            </div>
           </div>
-          <div class="timer-btns">
-            <button class="btn-icon" onclick="resetTimer()" title="Reset" aria-label="Reset">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 109-9H9"/><path d="M9 3L9 9H3"/></svg>
-            </button>
-            <button class="btn-start" id="startBtn" onclick="toggleTimer()">Start</button>
-            <button class="btn-icon" onclick="skipMode()" title="Skip" aria-label="Skip">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 4l10 8-10 8V4z"/><line x1="19" y1="4" x2="19" y2="20"/></svg>
-            </button>
+
+          <div class="timer-controls">
+            <button class="btn-icon" onclick="resetTimer()">↺</button>
+            <button class="btn-primary" id="startBtn" onclick="toggleTimer()">Start Session</button>
+            <button class="btn-icon" onclick="skipTimer()">⏭</button>
           </div>
-          <div class="session-dots" id="sessionDots"></div>
+          <div class="dots" id="sessionDots"></div>
         </div>
 
-        <!-- RIGHT -->
-        <div class="right-panel">
-          <div class="deadlines-card">
-            <div class="dl-header">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-              <span class="dl-title">My Deadlines</span>
+        <div class="col">
+          <div class="card flex-1">
+            <div class="card-header">
+              <span class="card-title">Focus Flow</span>
+              <div class="badge-box"><span id="taskCountDone">0</span>/<span id="taskCountTotal">0</span> Tasks</div>
             </div>
-            <div id="deadlinesList"></div>
-            <button class="btn-add-dl" onclick="openDlModal()">+ Add Deadline</button>
+            <button class="btn-outline w-100 mb-3" onclick="openModal('taskModal')">+ Add Focus Objective</button>
+            <ul class="task-list" id="taskList"></ul>
           </div>
-          <div class="tasks-card">
-            <div class="tasks-header">
-              <span class="tasks-title">Tasks</span>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Urgent Milestones</span>
             </div>
-            <div class="task-input-row">
-              <input class="task-inp" id="taskInp" placeholder="Add a new task..." onkeydown="if(event.key==='Enter')addTask()">
-              <button class="btn-add-task" onclick="addTask()">Add</button>
-            </div>
-            <div class="tasks-section-label open" id="ipLabel" onclick="toggleSection('ip')">In Progress</div>
-            <ul class="task-list" id="taskListIp"></ul>
-            <div class="tasks-section-label open" id="doneLabel" onclick="toggleSection('done')">Done</div>
-            <ul class="task-list" id="taskListDone"></ul>
+            <div class="deadline-list" id="deadlineList"></div>
+            <button class="btn-outline w-100 mt-2" onclick="openModal('dlModal')">+ Add Deadline</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Calendar View -->
+    <!-- CALENDAR VIEW -->
     <div class="view" id="calendarView">
-      <div class="view-inner">
-        <div class="view-head">
-          <div>
-            <button class="btn-back" onclick="showView('dashboard')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-              Back
-            </button>
-            <div class="view-title">Calendar</div>
-            <div class="view-sub">Plan your week and track your sessions</div>
+      <div class="cal-layout">
+        <div class="cal-main card">
+          <div class="cal-header">
+            <h2 id="calMonthLabel">Loading...</h2>
+            <div class="cal-controls">
+              <button class="btn-outline" onclick="calNav(0)">Today</button>
+              <button class="btn-outline" onclick="calNav(-1)">‹</button>
+              <button class="btn-outline" onclick="calNav(1)">›</button>
+              <button class="btn-outline" onclick="openModal('evModal')">+ Add Event</button>
+            </div>
           </div>
-          <button class="btn-new-event" onclick="openEvModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
-            New Event
-          </button>
+          <div class="calendar-grid" id="calendarGrid"></div>
         </div>
-        <div id="calContent"></div>
+
+        <div class="cal-sidebar">
+          <div class="card mb-4">
+            <h3 class="mb-2" id="calDetailDate">Select a date</h3>
+            <div class="badge green mb-3" id="calTodayBadge" style="display:none">Today</div>
+            <div class="timeline" id="calDetailTimeline"></div>
+          </div>
+
+          <div class="card">
+            <h3 class="mb-3">Urgent Milestones</h3>
+            <div class="milestone-box" id="calMilestoneBox"></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Habits View -->
+    <!-- HABITS VIEW -->
     <div class="view" id="habitsView">
-      <div class="view-inner">
-        <button class="btn-back" onclick="showView('dashboard')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-          Back
-        </button>
-        <div class="view-title">Habits</div>
-        <div class="view-sub">Build consistency, one day at a time</div>
-        <div class="habits-list" id="habitsList"></div>
-        <button class="btn-add-habit" onclick="addHabit()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-          Add New Habit
-        </button>
-      </div>
-    </div>
-
-    <!-- Music View -->
-    <div class="view" id="musicView">
-      <div class="view-inner">
-        <button class="btn-back" onclick="showView('dashboard')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-          Back
-        </button>
-        <div class="view-title">Music &amp; Ambience</div>
-        <div class="view-sub">Free ambient sounds generated in your browser</div>
-        <input class="music-search" placeholder="Search sounds..." id="musicSearch" oninput="filterMusic()">
-        <div class="music-cats" id="musicCats"></div>
-        <div class="music-grid" id="musicGrid"></div>
-      </div>
-    </div>
-
-    <!-- Background View -->
-    <div class="view" id="backgroundView">
-      <div class="view-inner">
-        <button class="btn-back" onclick="showView('dashboard')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-          Back
-        </button>
-        <div class="view-title">Background</div>
-        <div class="view-sub">Set the vibe for your study sessions</div>
-        <div class="bg-section-label">Scenes</div>
-        <div class="bg-grid" id="bgGrid"></div>
-        <div class="bg-section-label" style="margin-top:20px">Solid Colors</div>
-        <div class="bg-color-grid" id="bgColorGrid"></div>
-      </div>
-    </div>
-
-    <!-- Customize View -->
-    <div class="view" id="customizeView">
-      <div class="view-inner">
-        <button class="btn-back" onclick="showView('dashboard')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-          Back
-        </button>
-        <div class="view-title">Customize</div>
-        <div class="view-sub">Make StudyNest yours</div>
-
-        <div class="customize-section">
-          <div class="customize-section-title">Accent Color</div>
-          <div class="color-swatches" id="accentSwatches"></div>
+      <div class="habits-layout">
+        <div class="habits-top-stats">
+          <div class="card stat-card"><div class="lbl">TOTAL DEEP WORK</div><div class="val"><span id="hTotalH">0</span><span>h</span> <span id="hTotalM">0</span><span>m</span></div></div>
+          <div class="card stat-card"><div class="lbl">FOCUS COMPLETION RATE</div><div class="val"><span id="hRate">0</span><span>%</span></div></div>
+          <div class="card stat-card"><div class="lbl">CURRENT MOMENTUM</div><div class="val"><span id="hStreak">0</span> <span>Days</span></div></div>
+          <div class="card stat-card"><div class="lbl">FLOW PEAK WINDOW</div><div class="val">08:00 - 11:30</div></div>
         </div>
 
-        <div class="customize-section">
-          <div class="customize-section-title">Timer Presets</div>
-          <div class="timer-presets" id="timerPresets"></div>
+        <div class="habits-main-grid">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Daily Sanctuary Rituals</span>
+              <button class="btn-outline" onclick="openModal('habitModal')">+ New Ritual</button>
+            </div>
+            <div class="habit-full-list" id="habitFullList"></div>
+          </div>
+
+          <div class="card">
+            <h3 class="mb-3">Your Focus Garden</h3>
+            <div class="garden-placeholder" id="gardenWidget">
+              <div class="garden-icon">🌱</div>
+              <div class="sub-text" id="gardenText">No habits planted yet</div>
+            </div>
+          </div>
         </div>
 
-        <div class="customize-section">
-          <div class="customize-section-title">Display Options</div>
-          <div class="toggle-row">
-            <div>
-              <div class="toggle-label">Show motivational quote</div>
-              <div class="toggle-sub">Displayed above the timer</div>
+        <div class="habits-charts-grid">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Weekly Focus Hours vs Target</span>
             </div>
-            <button class="toggle on" id="quoteToggle" onclick="toggleOpt(this,'quote')"></button>
+            <div class="chart-bars" id="weeklyChart"></div>
           </div>
-          <div class="toggle-row">
-            <div>
-              <div class="toggle-label">Auto-start breaks</div>
-              <div class="toggle-sub">Skip confirmation between modes</div>
+
+          <div class="card">
+             <div class="card-header">
+              <span class="card-title">Subject Distribution</span>
             </div>
-            <button class="toggle" id="autoToggle" onclick="toggleOpt(this,'auto')"></button>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div class="toggle-label">Dim background when focusing</div>
-              <div class="toggle-sub">Increases overlay darkness</div>
+            <div class="donut-chart" id="donutChart">
+              <div class="donut-inner"><span id="donutTotal">0</span><span>h</span></div>
             </div>
-            <button class="toggle on" id="dimToggle" onclick="toggleOpt(this,'dim')"></button>
+            <div class="donut-legend">
+              <div class="legend-item"><span class="color-box" style="background:var(--accent)"></span> Focus Time</div>
+              <div class="legend-item"><span class="color-box" style="background:#333"></span> Remaining</div>
+            </div>
           </div>
         </div>
       </div>
